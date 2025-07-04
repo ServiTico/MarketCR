@@ -139,12 +139,32 @@ async function loadPricesFromExcel() {
     const worksheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(worksheet);
 
+    console.log("Datos leídos del Excel:", data);
+
+    // Creamos un mapa para buscar rápido por nombre (en minúsculas y sin espacios extra)
+    const priceMap = new Map();
     data.forEach(row => {
-      const product = products.find(p => p.name === row.name);
-      if (product && row.price) {
-        product.price = row.price;
+      if (row.Nombre && row.Precio != null) {
+        priceMap.set(row.Nombre.trim().toLowerCase(), row.Precio);
       }
     });
+
+    // Actualizamos precios y stock en el array products
+    products.forEach(product => {
+      const key = product.name.trim().toLowerCase();
+      if (priceMap.has(key)) {
+        product.price = priceMap.get(key);
+
+        // Opcional: actualizar stock si quieres
+        const stockRow = data.find(r => r.Nombre.trim().toLowerCase() === key);
+        if(stockRow && stockRow.Stock != null){
+          product.available = stockRow.Stock;
+        }
+      }
+    });
+
+    // Finalmente renderizamos productos con los precios y stock actualizados
+    renderProducts();
   } catch (error) {
     console.error("Error cargando Excel:", error);
     alert("No se pudo cargar la base de datos de precios. Usando precios por defecto.");
@@ -274,21 +294,45 @@ document.getElementById("checkout-form").addEventListener("submit", function (e)
 
   if (!nombre || !telefono) return alert("Por favor complete todos los campos");
 
-  alert("¡Pedido enviado con éxito!");
-  cart = [];
-  updateCartUI();
-  renderProducts();
-  this.reset();
-  bootstrap.Modal.getInstance(document.getElementById("checkoutModal")).hide();
+  const productos = cart.map(p => `${p.name} x${p.quantity}`).join(", ");
+  const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
+
+  const templateParams = {
+    nombre: nombre,
+    telefono: telefono,
+    productos: productos,
+    total: `₡${total.toLocaleString()}`
+  };
+
+  emailjs.send('service_7u7388h', 'template_ryisoem', templateParams)
+    .then(() => {
+      alert("¡Pedido enviado con éxito!");
+      cart = [];
+      updateCartUI();
+      renderProducts();
+      this.reset();
+      bootstrap.Modal.getInstance(document.getElementById("checkoutModal")).hide();
+    }, (error) => {
+      console.error("Error al enviar:", error);
+      alert("Hubo un error al enviar el pedido. Intente nuevamente.");
+    });
 });
 
 // Carga inicial: precios, luego renderiza todo
 (async function init() {
   await loadPricesFromExcel();
   renderCarousel();
-  renderProducts();
+  loadPricesFromExcel();
 })();
 </script>
+
+<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function () {
+    emailjs.init("EYmvLTlkQZL9_r4zS"); // reemplaza con tu public key
+  })();
+</script>
+
 
 </body>
 </html>
