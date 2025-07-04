@@ -312,8 +312,9 @@ document.getElementById("checkout-form").addEventListener("submit", function (e)
       renderProducts();
       this.reset();
       bootstrap.Modal.getInstance(document.getElementById("checkoutModal")).hide();
-    }, (error) => {
-      console.error("Error al enviar:", error);
+    })
+     .catch((error) => {
+      console.error("❌ ERROR DETALLADO:", error);  // <-- Aquí es clave
       alert("Hubo un error al enviar el pedido. Intente nuevamente.");
     });
 });
