@@ -99,9 +99,13 @@
   width: auto;
   display: inline-block;
 }
+</style>
+
 <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script>
+
   emailjs.init("EYmvLTlkQZL9_r4zS"); // tu PUBLIC KEY
+
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -182,9 +186,9 @@ function renderCarousel() {
     const folder = encodeURIComponent(product.name);
     for (let i = 1; i <= product.images; i++) {
       const div = document.createElement("div");
-      div.className = `carousel-item${isFirst ? ' active' : ''}`;
+      div.className = carousel-item${isFirst ? ' active' : ''};
       isFirst = false;
-      div.innerHTML = `<img src="img/${folder}/${i}.png" class="d-block w-100" alt="${product.name} ${i}" />`;
+      div.innerHTML = <img src="img/${folder}/${i}.png" class="d-block w-100" alt="${product.name} ${i}" />;
       carouselContainer.appendChild(div);
     }
   });
@@ -194,14 +198,14 @@ function renderCarousel() {
 function renderProducts(filteredList = products) {
   productList.innerHTML = "";
   if (filteredList.length === 0) {
-    productList.innerHTML = `<div class="col"><p class="text-center">No se encontraron productos.</p></div>`;
+    productList.innerHTML = <div class="col"><p class="text-center">No se encontraron productos.</p></div>;
     return;
   }
   filteredList.forEach(product => {
     const folder = encodeURIComponent(product.name);
     const card = document.createElement("div");
     card.className = "col";
-    card.innerHTML = `
+    card.innerHTML = 
       <div class="card h-100">
         <img src="img/${folder}/1.png" class="card-img-top" alt="${product.name}">
         <div class="card-body">
@@ -210,12 +214,12 @@ function renderProducts(filteredList = products) {
           <p class="text-muted small">Cantidad disponible: <span>${product.available}</span></p>
           ${
             product.available > 0
-              ? `<button class="btn btn-success w-100" onclick='addToCart("${product.name}")'>Agregar al carrito</button>`
-              : `<button class="btn btn-secondary w-100" disabled>Agotado</button>`
+              ? <button class="btn btn-success w-100" onclick='addToCart("${product.name}")'>Agregar al carrito</button>
+              : <button class="btn btn-secondary w-100" disabled>Agotado</button>
           }
         </div>
       </div>
-    `;
+    ;
     productList.appendChild(card);
   });
 }
@@ -261,7 +265,7 @@ function updateCartUI() {
     count += p.quantity;
     const li = document.createElement("li");
     li.className = "list-group-item d-flex justify-content-between align-items-center";
-    li.innerHTML = `
+    li.innerHTML = 
       <div>
         <h6 class="my-0">${p.name}</h6>
         <small class="text-muted">Cantidad: ${p.quantity}</small>
@@ -270,7 +274,7 @@ function updateCartUI() {
         <span>₡${(p.price * p.quantity).toLocaleString()}</span>
         <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${p.name}')">✕</button>
       </div>
-    `;
+    ;
     cartItems.appendChild(li);
   });
 
@@ -297,14 +301,14 @@ document.getElementById("checkout-form").addEventListener("submit", function (e)
 
   if (!nombre || !telefono) return alert("Por favor complete todos los campos");
 
-  const productos = cart.map(p => `${p.name} x${p.quantity}`).join(", ");
+  const productos = cart.map(p => ${p.name} x${p.quantity}).join(", ");
   const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
 
   const templateParams = {
     nombre: nombre,
     telefono: telefono,
     productos: productos,
-    total: `₡${total.toLocaleString()}`
+    total: ₡${total.toLocaleString()}
   };
 
   emailjs.send('service_7u7388h', 'template_ryisoem', templateParams)
