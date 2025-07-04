@@ -8,13 +8,10 @@
 </head>
 <body>
 
-<!-- NAVBAR con selector de categoría -->
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-light bg-info px-4">
   <a class="navbar-brand fw-bold" href="#">Market-CR</a>
-  <div class="ms-auto d-flex align-items-center">
-    <select id="category-select" class="form-select w-auto me-2">
-      <option value="all">Todas las categorías</option>
-    </select>
+  <div class="ms-auto w-50 d-flex">
     <input id="search-input" class="form-control me-2" type="search" placeholder="Buscar productos..." />
     <button class="btn btn-outline-dark" type="button" disabled>Buscar</button>
   </div>
@@ -41,7 +38,7 @@
   <div class="row row-cols-1 row-cols-md-3 g-4" id="product-list"></div>
 </div>
 
-<!-- Modal carrito -->
+<!-- MODAL CARRITO -->
 <div class="modal fade" id="cartModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -60,7 +57,7 @@
   </div>
 </div>
 
-<!-- Modal checkout -->
+<!-- MODAL CHECKOUT -->
 <div class="modal fade" id="checkoutModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -87,10 +84,12 @@
   </div>
 </div>
 
+<!-- FOOTER -->
 <footer class="bg-dark text-white text-center mt-5 p-4">
   <p class="mb-0">© 2025 Market-CR</p>
 </footer>
 
+<!-- ESTILOS INLINE -->
 <style>
   .carousel-inner {
     text-align: center;
@@ -100,168 +99,213 @@
     width: auto;
     display: inline-block;
   }
-  .form-select {
-    max-width: 200px;
-  }
 </style>
 
-<!-- SDK EmailJS v3 -->
+<!-- EmailJS SDK v3 (Compatible sin módulos) -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-  emailjs.init("EYmvLTlkQZL9_r4zS"); // tu PUBLIC KEY
+  emailjs.init("EYmvLTlkQZL9_r4zS"); // Reemplaza con tu PUBLIC KEY
 </script>
 
+<!-- Bootstrap JS y SheetJS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
+<!-- TU SCRIPT PRINCIPAL -->
 <script>
 let products = [
-  { name: "Guantes de boxeo...", images: 3, available: 5, category: "Deportes" },
-  { name: "Manga refrescantes para brazos", images: 3, available: 10, category: "Deportes" },
-  { name: "Masajeador de cuello de soporte cervical", images: 3, available: 7, category: "Salud" },
-  { name: "Hombrera de compresión", images: 3, available: 6, category: "Ortopedia" },
-  { name: "Muñequera para el síndrome del túnel carpiano", images: 3, available: 8, category: "Ortopedia" },
-  { name: "Guantes de boxeo premium", images: 1, available: 4, category: "Deportes" },
-  { name: "Vendaje de compresión ajustable para tobillo", images: 3, available: 9, category: "Ortopedia" },
-  { name: "Codera ajustable", images: 3, available: 5, category: "Ortopedia" },
-  { name: "Rodillera de compresión ajustable con funda antideslizante", images: 2, available: 6, category: "Ortopedia" },
-  { name: "Muñequera de compresión ajustable de poliéster transpirable", images: 2, available: 7, category: "Ortopedia" },
-  { name: "Muñequera ergonómica negra de fibra", images: 3, available: 5, category: "Ortopedia" }
+  { name: "Guantes de boxeo negros de medio dedo para adultos de calidad profesional", images: 3, available: 5 },
+  { name: "Manga refrescantes para brazos", images: 3, available: 10 },
+  { name: "Masajeador de cuello de soporte cervical", images: 3, available: 7 },
+  { name: "Hombrera de compresión", images: 3, available: 6 },
+  { name: "Muñequera para el síndrome del túnel carpiano", images: 3, available: 8 },
+  { name: "Guantes de boxeo premium", images: 1, available: 4 },
+  { name: "Vendaje de compresión ajustable para tobillo", images: 3, available: 9 },
+  { name: "Codera ajustable", images: 3, available: 5 },
+  { name: "Rodillera de compresión ajustable con funda antideslizante", images: 2, available: 6 },
+  { name: "Muñequera de compresión ajustable de poliéster transpirable", images: 2, available: 7 },
+  { name: "Muñequera ergonómica negra de fibra", images: 3, available: 5 }
 ];
 
 const carouselContainer = document.getElementById("carousel-inner");
 const productList = document.getElementById("product-list");
-const categorySelect = document.getElementById("category-select");
-const searchInput = document.getElementById("search-input");
 const cartItems = document.getElementById("cart-items");
 const cartTotal = document.getElementById("cart-total");
 const cartCount = document.getElementById("cart-count");
-
+const searchInput = document.getElementById("search-input");
 let cart = [];
 
-function populateCategories() {
-  const cats = [...new Set(products.map(p => p.category))].sort();
-  cats.forEach(c => {
-    const o = document.createElement("option");
-    o.value = c;
-    o.textContent = c;
-    categorySelect.append(o);
-  });
+async function loadPricesFromExcel() {
+  try {
+    const response = await fetch('data/listV1.xlsx');
+    const arrayBuffer = await response.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet);
+
+    const priceMap = new Map();
+    data.forEach(row => {
+      if (row.Nombre && row.Precio != null) {
+        priceMap.set(row.Nombre.trim().toLowerCase(), row.Precio);
+      }
+    });
+
+    products.forEach(product => {
+      const key = product.name.trim().toLowerCase();
+      if (priceMap.has(key)) {
+        product.price = priceMap.get(key);
+        const stockRow = data.find(r => r.Nombre.trim().toLowerCase() === key);
+        if (stockRow && stockRow.Stock != null) {
+          product.available = stockRow.Stock;
+        }
+      }
+    });
+
+    renderProducts();
+  } catch (error) {
+    console.error("Error cargando Excel:", error);
+    alert("No se pudo cargar la base de datos. Usando precios por defecto.");
+  }
 }
 
 function renderCarousel() {
   carouselContainer.innerHTML = "";
-  let first = true;
-  products.forEach(p => {
-    const folder = encodeURIComponent(p.name);
-    for (let i = 1; i <= p.images; i++) {
+  let isFirst = true;
+  products.forEach(product => {
+    const folder = encodeURIComponent(product.name);
+    for (let i = 1; i <= product.images; i++) {
       const div = document.createElement("div");
-      div.className = first ? 'carousel-item active' : 'carousel-item';
-      first = false;
-      div.innerHTML = `<img src="img/${folder}/${i}.png" class="d-block w-100" alt="${p.name}">`;
-      carouselContainer.append(div);
+      div.className = `carousel-item${isFirst ? ' active' : ''}`;
+      isFirst = false;
+      div.innerHTML = `<img src="img/${folder}/${i}.png" class="d-block w-100" alt="${product.name} ${i}" />`;
+      carouselContainer.appendChild(div);
     }
   });
 }
 
-function renderProducts() {
-  let list = [...products];
-  const cat = categorySelect.value;
-  const term = searchInput.value.trim().toLowerCase();
-
-  if (cat !== 'all') list = list.filter(p => p.category === cat);
-  if (term) list = list.filter(p => p.name.toLowerCase().includes(term));
-
-  productList.innerHTML = list.length
-    ? list.map(p => {
-      const folder = encodeURIComponent(p.name);
-      const disabled = p.available > 0 ? `<button class="btn btn-success w-100" onclick='addToCart("${p.name}")'>Agregar</button>` : `<button class="btn btn-secondary w-100" disabled>Agotado</button>`;
-      return `
-        <div class="col">
-          <div class="card h-100">
-            <img src="img/${folder}/1.png" class="card-img-top" alt="${p.name}">
-            <div class="card-body">
-              <h5 class="card-title">${p.name}</h5>
-              <p class="text-muted small">₡${(p.price||0).toLocaleString()}</p>
-              <p class="text-muted small">Categoría: ${p.category}</p>
-              <p class="text-muted small">Disponible: ${p.available}</p>
-              ${disabled}
-            </div>
-          </div>
-        </div>`;
-    }).join('')
-    : `<div class="col"><p class="text-center">No se encontraron productos.</p></div>`;
+function renderProducts(filteredList = products) {
+  productList.innerHTML = "";
+  if (filteredList.length === 0) {
+    productList.innerHTML = `<div class="col"><p class="text-center">No se encontraron productos.</p></div>`;
+    return;
+  }
+  filteredList.forEach(product => {
+    const folder = encodeURIComponent(product.name);
+    const card = document.createElement("div");
+    card.className = "col";
+    card.innerHTML = `
+      <div class="card h-100">
+        <img src="img/${folder}/1.png" class="card-img-top" alt="${product.name}">
+        <div class="card-body">
+          <h5 class="card-title">${product.name}</h5>
+          <p class="card-text">₡${(product.price ?? 0).toLocaleString()}</p>
+          <p class="text-muted small">Cantidad disponible: <span>${product.available}</span></p>
+          ${product.available > 0
+            ? `<button class="btn btn-success w-100" onclick='addToCart("${product.name}")'>Agregar al carrito</button>`
+            : `<button class="btn btn-secondary w-100" disabled>Agotado</button>`}
+        </div>
+      </div>
+    `;
+    productList.appendChild(card);
+  });
 }
 
 function addToCart(name) {
-  const p = products.find(x => x.name === name);
-  if (!p || p.available < 1) return alert("Producto agotado");
-  p.available--;
-  const c = cart.find(x => x.name===name);
-  c ? c.quantity++ : cart.push({ ...p, quantity: 1 });
-  updateCart();
+  const product = products.find(p => p.name === name);
+  if (!product || product.available <= 0) {
+    alert("Producto agotado.");
+    return;
+  }
+  const existing = cart.find(p => p.name === name);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({ ...product, quantity: 1 });
+  }
+  product.available -= 1;
+  updateCartUI();
+  renderProducts();
 }
 
 function removeFromCart(name) {
-  cart = cart.filter(x => {
-    if (x.name === name) {
-      const p = products.find(y => y.name === name);
-      p.available += x.quantity;
-      return false;
-    }
-    return true;
-  });
-  updateCart();
-}
-
-function updateCart() {
-  cartItems.innerHTML = cart.map(c => `
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div><h6>${c.name}</h6><small class="text-muted">Cant: ${c.quantity}</small></div>
-      <div>₡${(c.quantity*c.price).toLocaleString()} <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${c.name}')">✕</button></div>
-    </li>
-  `).join('');
-  const total = cart.reduce((s,c)=>s+c.quantity*c.price,0);
-  cartTotal.textContent = total.toLocaleString();
-  cartCount.textContent = cart.reduce((s,c)=>s+c.quantity,0);
+  const item = cart.find(p => p.name === name);
+  if (item) {
+    const product = products.find(p => p.name === name);
+    product.available += item.quantity;
+  }
+  cart = cart.filter(p => p.name !== name);
+  updateCartUI();
   renderProducts();
 }
 
-document.getElementById("checkout-form").addEventListener("submit", e => {
+function updateCartUI() {
+  cartItems.innerHTML = "";
+  let total = 0;
+  let count = 0;
+  cart.forEach(p => {
+    total += p.price * p.quantity;
+    count += p.quantity;
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    li.innerHTML = `
+      <div>
+        <h6 class="my-0">${p.name}</h6>
+        <small class="text-muted">Cantidad: ${p.quantity}</small>
+      </div>
+      <div>
+        <span>₡${(p.price * p.quantity).toLocaleString()}</span>
+        <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${p.name}')">✕</button>
+      </div>
+    `;
+    cartItems.appendChild(li);
+  });
+  cartTotal.textContent = total.toLocaleString();
+  cartCount.textContent = count;
+}
+
+searchInput.addEventListener("input", function () {
+  const term = this.value.trim().toLowerCase();
+  const filtered = term === "" ? products : products.filter(p => p.name.toLowerCase().includes(term));
+  renderProducts(filtered);
+});
+
+document.getElementById("checkout-form").addEventListener("submit", function (e) {
   e.preventDefault();
   const nombre = document.getElementById("nombre").value.trim();
   const telefono = document.getElementById("telefono").value.trim();
-  if (!nombre||!telefono) return alert("Completa todos los campos");
+  if (!nombre || !telefono) return alert("Por favor complete todos los campos");
 
-  const productos = cart.map(c => `${c.name} x${c.quantity}`).join(", ");
-  const total = cart.reduce((s,c)=>s+c.quantity*c.price,0);
+  const productos = cart.map(p => `${p.name} x${p.quantity}`).join(", ");
+  const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
 
-  emailjs.send('service_7u7388h', 'template_ryisoem', {
-    nombre, telefono, productos, total: `₡${total.toLocaleString()}`
-  })
-  .then(() => {
-    alert("¡Pedido enviado!");
-    cart = [];
-    updateCart();
-    document.getElementById("checkout-form").reset();
-    bootstrap.Modal.getInstance(document.getElementById("checkoutModal")).hide();
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Error al enviar pedido.");
-  });
+  const templateParams = {
+    nombre,
+    telefono,
+    productos,
+    total: `₡${total.toLocaleString()}`
+  };
+
+  emailjs.send('service_7u7388h', 'template_ryisoem', templateParams)
+    .then(() => {
+      alert("¡Pedido enviado con éxito!");
+      cart = [];
+      updateCartUI();
+      renderProducts();
+      this.reset();
+      bootstrap.Modal.getInstance(document.getElementById("checkoutModal")).hide();
+    })
+    .catch((error) => {
+      console.error("❌ ERROR DETALLADO:", error);
+      alert("Hubo un error al enviar el pedido.");
+    });
 });
 
-categorySelect.addEventListener("change", renderProducts);
-searchInput.addEventListener("input", renderProducts);
-
+// Inicializar
 (async function init() {
-  await loadPricesFromExcel?.();
-  populateCategories();
+  await loadPricesFromExcel();
   renderCarousel();
-  renderProducts();
 })();
 </script>
-
 </body>
 </html>
