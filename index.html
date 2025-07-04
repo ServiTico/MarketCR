@@ -327,11 +327,12 @@ document.getElementById("checkout-form").addEventListener("submit", function (e)
 })();
 </script>
 
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-  (function () {
-    emailjs.init("EYmvLTlkQZL9_r4zS"); // reemplaza con tu public key
-  })();
+<script type="module">
+  import emailjs from 'https://cdn.emailjs.com/sdk/3.11.0/email.min.mjs';
+
+  emailjs.init("EYmvLTlkQZL9_r4zS"); // tu PUBLIC KEY
+
+  window.emailjs = emailjs; // exportarlo al scope global
 </script>
 
 
