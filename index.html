@@ -12,7 +12,26 @@
     body { background-color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
     .navbar { padding: 1rem 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     #hero { background: #f0f0f0; padding: 1rem; text-align: center; }
-    .product-card img { height: 220px; width: 100%; object-fit: contain; border-top-left-radius: .5rem; border-top-right-radius: .5rem; }
+    .product-card img
+     {  
+       height: 220px;
+       width: 100%;
+       object-fit: contain;
+       background-color: #f8f9fa;
+       border-top-left-radius: .5rem;
+       border-top-right-radius: .5rem;
+       display: block;
+       margin: auto;
+       padding: 0.5rem;
+       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+       border: 1px solid #ddd;
+       transition: transform 0.3s ease, box-shadow 0.3s ease;
+     }
+    .product-card img:hover {
+      transform: scale(1.05); /* Zoom suave */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra más profunda */
+      border-color: #bbb; /* Borde ligeramente más visible */
+    }
     .card { border: none; transition: transform .2s ease; }
     .card:hover { transform: translateY(-5px); box-shadow: 0 4px 10px rgba(0,0,0,.1); }
     .category-filter.active { font-weight: bold; text-decoration: underline; }
@@ -198,6 +217,7 @@
             <img src="img/${folder}/1.png" class="card-img-top" alt="${product.name}" onerror="this.onerror=null;this.src='img/default.png';">
             <div class="card-body">
               <h5 class="card-title">${product.name}</h5>
+              <p class="card-text text-muted small">${product.description}</p>
               <p class="card-text">₡${product.price.toLocaleString()}</p>
               <p class="text-muted small">Disponibles: ${product.available}</p>
               <button class="btn btn-success w-100" onclick="addToCart('${product.name}')" ${product.available === 0 ? 'disabled' : ''}>Agregar al carrito</button>
