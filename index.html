@@ -58,7 +58,7 @@
   <!-- HERO -->
   <div id="hero">
     <h1 class="fw-bold">Bienvenido a Market-CR</h1>
-    <p class="lead">Descubre una selección exclusiva de productos para cuidar tu salud, mejorar tu rendimiento deportivo y mucho más. ¡Todo lo que necesitas en un solo lugar!.</p>
+    <p class="lead">¡Todo lo que necesitas en un solo lugar!</p>
   </div>
 
   <!-- FILTROS CATEGORÍA -->
@@ -122,7 +122,7 @@
 
   <!-- FOOTER -->
   <footer class="text-center">
-    <p class="mb-1">&copy; 2025 Market-CR - Todos los derechos reservados TEST.</p>
+    <p class="mb-1">&copy; 2025 Market-CR - Todos los derechos reservados.</p>
     <div>
       <!-- <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
       <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
@@ -148,6 +148,7 @@
         const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(sheet);
+        // document.addEventListener('contextmenu', event => event.preventDefault());
 
         const categoriesSet = new Set();
         products = rows.map(row => {
