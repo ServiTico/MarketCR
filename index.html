@@ -140,14 +140,13 @@
     let currentFilter = [];
 
     const csvUrl = "https://raw.githubusercontent.com/ServiTico/MarketCR/main/data/listV1.csv";
-    loadProductsFromCSV(csvUrl);
 
     async function loadProductsFromCSV(url) {
       try {
         const res = await fetch(url);
         const text = await res.text();
 
-        const rows = text.trim().split('\n').map(line => line.split(','));
+        const rows = text.trim().split('\n').map(line => line.split('\t'));
         const headers = rows.shift();
 
         const categoriesSet = new Set();
@@ -164,16 +163,17 @@
             price: Number(product.Precio),
             available: Number(product.Cantidad),
             category: product.Categoria,
+            folder: product["Carpeta de imagenes"]?.trim().toLowerCase().replace(/\s+/g, '_') || "default"
           };
         });
 
-        currentFilter = [...products];
-        renderCategoryButtons(Array.from(categoriesSet));
-        renderProducts(currentFilter);
-      } catch (err) {
-        console.error("Error cargando productos desde CSV:", err);
-      }
-    }
+    currentFilter = [...products];
+    renderCategoryButtons(Array.from(categoriesSet));
+    renderProducts(currentFilter);
+  } catch (err) {
+    console.error("Error cargando productos desde CSV:", err);
+  }
+}
 
     function renderCategoryButtons(categories) {
       const container = document.getElementById("category-buttons");
@@ -322,10 +322,6 @@
         resumenBox.innerHTML = cart.map(p => `<p>${p.name} x${p.quantity} – ₡${(p.price * p.quantity).toLocaleString()}</p>`).join('');
       }
     });
-
-    // Inicia carga
-    loadProductsFromCSV(csvUrl);
-    folder: product["Carpeta de imagenes"]?.trim().toLowerCase().replace(/\s+/g, '_') || ''
   </script>
 </body>
 </html>
