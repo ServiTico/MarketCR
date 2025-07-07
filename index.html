@@ -129,7 +129,9 @@
       <a href="#" class="text-white"><i class="bi bi-whatsapp"></i></a> -->
     </div>
   </footer>
-
+  <script>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+  </script>
   <!-- LIBRERIAS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
@@ -148,7 +150,6 @@
         const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(sheet);
-        // document.addEventListener('contextmenu', event => event.preventDefault());
 
         const categoriesSet = new Set();
         products = rows.map(row => {
