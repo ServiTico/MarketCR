@@ -212,23 +212,42 @@
       }
       filtered.forEach(product => {
         const folder = normalizeName(product.name);
-        const col = document.createElement("div");
-        col.className = "col";
-        col.innerHTML = `
-          <div class="card h-100 product-card">
-            <img src="img/${folder}/1.png" class="card-img-top" alt="${product.name}" onerror="this.onerror=null;this.src='img/default.png';">
-            <div class="card-body">
-              <h5 class="card-title">${product.name}</h5>
-              <p class="card-text text-muted small">${product.description}</p>
-              <p class="card-text">₡${product.price.toLocaleString()}</p>
-              <p class="text-muted small">Disponibles: ${product.available}</p>
-              <button class="btn btn-success w-100" onclick="addToCart('${product.name}')" ${product.available === 0 ? 'disabled' : ''}>Agregar al carrito</button>
-            </div>
-          </div>`;
-        productList.appendChild(col);
-      });
-    }
+        const carouselId = `carousel-${folder}`;  // id único para cada carrusel
+        const images = [1, 2, 3].map(i => `img/${folder}/${i}.png`);
 
+    const col = document.createElement("div");
+    col.className = "col";
+    col.innerHTML = `
+      <div class="card h-100 product-card">
+        <div id="${carouselId}" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            ${images.map((src, idx) => `
+              <div class="carousel-item ${idx === 0 ? "active" : ""}">
+                <img src="${src}" class="d-block w-100" alt="${product.name}" 
+                  onerror="this.onerror=null;this.src='img/default.png';">
+              </div>
+            `).join('')}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          </button>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">${product.name}</h5>
+          <p class="card-text text-muted small">${product.description}</p>
+          <p class="card-text">₡${product.price.toLocaleString()}</p>
+          <p class="text-muted small">Disponibles: ${product.available}</p>
+          <button class="btn btn-success w-100" onclick="addToCart('${product.name}')" ${product.available === 0 ? 'disabled' : ''}>Agregar al carrito</button>
+        </div>
+      </div>`;
+    productList.appendChild(col);
+  });
+}
     function addToCart(name) {
       const product = products.find(p => p.name === name);
       if (!product || product.available === 0) return;
