@@ -1,0 +1,98 @@
+/* Estilo general */
+body {
+  background-color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Navbar */
+.navbar {
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Sección hero */
+#hero {
+  background: #f0f0f0;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Imagen de producto */
+.product-card img {
+  height: 220px;
+  width: 100%;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  border-top-left-radius: .5rem;
+  border-top-right-radius: .5rem;
+  display: block;
+  margin: auto;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #bbb;
+}
+
+/* Tarjetas */
+.card {
+  border: none;
+  transition: transform .2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
+}
+
+/* Filtros de categoría */
+.category-filter.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.category-filter {
+  cursor: pointer;
+}
+
+/* Footer */
+footer {
+  background-color: #343a40;
+  color: white;
+  padding: 2rem 1rem;
+  margin-top: 4rem;
+}
+
+/* Botones del carrusel (prev/next) visibles siempre */
+.carousel-control-prev,
+.carousel-control-next {
+  opacity: 1;
+}
+
+/* Personalización de los íconos de flechas del carrusel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  /* background-color: #28a745; Cambia a tu color preferido */
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  background-size: 100% 100%;
+  filter: invert(53%) sepia(87%) saturate(583%) hue-rotate(66deg) brightness(94%) contrast(90%) !important; /* Verde */
+
+  /* filter: invert(1); Cambia el color del icono blanco a negro o viceversa */
+}
+
+/* (Opcional) Mejora para navegabilidad en pantallas pequeñas */
+@media (max-width: 576px) {
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+}
